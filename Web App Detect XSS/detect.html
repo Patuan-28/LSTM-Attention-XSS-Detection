@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+        .search-container {
+            text-align: center;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 400px;
+            height: 40px;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        }
+        .search-button {
+            height: 40px;
+            padding: 0 20px;
+            font-size: 18px;
+            border: none;
+            background-color: #4285f4;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        }
+        .search-button:hover {
+            background-color: #357ae8;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+    <!-- Include SweetAlert CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.2/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.2/dist/sweetalert2.all.min.js"></script>
+</head>
+<body>
+    <div class="search-container">
+        <h1>XSS Detector</h1>
+        <form id="search-form">
+            <input type="text" id="query-input" name="query" class="search-input" placeholder="Enter URL...">
+            <button type="submit" class="search-button">Submit</button>
+        </form>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const query = document.getElementById('query-input').value;
+
+            fetch('https://8d8c-114-10-82-195.ngrok-free.app/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.error) {
+                    resultDiv.innerHTML = `Error: ${data.error}`;
+                } else {
+                    resultDiv.innerHTML = `Result: ${data.value}`;
+                    if (data.value === 'Malicious') {
+                        Swal.fire({
+                            title: 'Danger',
+                            text: 'The URL being accessed contains XSS',
+                            icon: 'warning',
+                            confirmButtonText: 'Close',
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Safe',
+                            text: 'The URL being accessed is safe from XSS',
+                            icon: 'success',
+                            confirmButtonText: 'Close',
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `An error occurred: ${error.message}`;
+            });
+        });
+    </script>
+</body>
+</html>
