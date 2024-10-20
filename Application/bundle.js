@@ -2,28 +2,24 @@
 const swal = require("sweetalert2");
 const urlWindow = window.location.href;
 const INJECTION_KEYS = "value";
-
 const detectXSSInject = () => {
     console.log("URL " + urlWindow);
-    fetch("https://513d-114-122-42-97.ngrok-free.app/predict", {
+    fetch("https://e9fe-114-122-43-62.ngrok-free.app/predict", {
         method: "POST",
         mode: "cors",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            "input_data": urlWindow
+            "text": urlWindow
         }),
     })
     .then((response) => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
         return response.json();
     })
     .then((text) => {
         console.log("testing " + text[INJECTION_KEYS]);
-        if (text[INJECTION_KEYS] === 'Malicious') {
+        if (text[INJECTION_KEYS] == 'Malicious') {
             swal.fire({
                 title: "Danger",
                 html: "The URL being accessed contains XSS <br />",
@@ -31,11 +27,12 @@ const detectXSSInject = () => {
                 confirmButtonText: "Close",
                 timer: 3000,
                 timerProgressBar: true,
-            }).then((result) => {
+              }).then((result) => {
                 if (result.isConfirmed) {
-                    window.close(); 
+                  window.close(); 
                 }
-            });
+              });
+              
         } else {
             swal.fire({
                 title: "Safe",
@@ -48,7 +45,7 @@ const detectXSSInject = () => {
         }
     })
     .catch((error) => {
-        console.error("Error Response: ", error.message);
+        console.log("Error Reponse "+ error.status + "error response 2" + error.statusText);
     });
 };
 

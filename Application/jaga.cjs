@@ -6,7 +6,7 @@ var url = "http://127.0.0.1:8000/predict";
 const detectXSSInject = () => {
     console.log("URL " + urlWindow);
     console.log("testing " + JSON.stringify({
-        input_data: urlWindow  
+        data: urlWindow  
     }));
     // fetch(url,  {
     //     method: 'POST',
@@ -18,7 +18,7 @@ const detectXSSInject = () => {
     //         'Accept': 'application/json'
     //     },
     //     body: JSON.stringify({
-    //         input_data: urlWindow
+    //         data: urlWindow
     //     })
     // })
     // .then(response => {
@@ -37,7 +37,7 @@ const detectXSSInject = () => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            "input_data": urlWindow
+            "data": urlWindow
         }),
     })
     .then((response) => {
